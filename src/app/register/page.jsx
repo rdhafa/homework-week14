@@ -19,19 +19,90 @@ export default function Register () {
     timerProgressBar: true,
   })
 
-  const handleRegister = (event) => {
-    event.preventDefault()
+  const regexLettersOnly = /[^a-zA-Z '-]+/g
+  const nameInputValidation = (e) => {
+    e.preventDefault()
+    setNameValue(e.target.value.replace(regexLettersOnly, ""))
+  }
 
+  const emailRegex = /[^a-zA-Z0-9.@]+/g
+  const emailInputValidation = (e) => {
+    e.preventDefault()
+    setEmailValue(e.target.value.replace(emailRegex, ""))
+  }
+
+  const passwordInputValue = (e) => {
+    e.preventDefault()
+    setPasswordValue(e.target.value)
+  }
+
+  const confirmPasswordInputValue = (e) => {
+    e.preventDefault()
+    const confirmPassword = e.target.value
+    setConfirmPasswordValue(confirmPassword)
+    if (passwordValue !== confirmPassword) {
+      setPasswordMatch(false)
+    } else if (passwordValue === confirmPassword) {
+      setPasswordMatch(true)
+    }
+  }
+
+  const handleRegister = async (event) => {
+    event.preventDefault()
+    const user = {
+      name: nameValue,
+      email: emailValue,
+      password: passwordValue
+    }
+    try {
+      if (!passwordMatch) {
+        const errMessage = 'Password does not Match!'
+        setError(errMessage)
+        throw new Error(errMessage)
+      }
+      const register = await fetch('http://localhost:3000/api/register', {
+        method: 'POST',
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(user)
+      })
+      if (register.status === 200) {
+        event.target.reset()
+        Toast.fire({
+          icon: 'success',
+          title: 'Thank You for Registering!',
+          position: 'top-end'
+        })
+        setError(false)
+        router.push('/')
+      } else {
+        throw await register.json()
+      }
+    } catch (err) {
+      setError(err.message)
+      Toast.fire({
+        icon: 'error',
+        title: 'Register Error!',
+        text: err.message,
+        position: 'top'
+      })
+    }
   }
 
   return (
     <>
       <div className="w-screen">
-        <div className="w-6/12 mx-auto mt-6 pb-8">
+        <div className="w-5/12 mx-auto mt-6 pb-8">
           <h1 className="text-4xl text-center font-medium mb-4">Register an Account</h1>
-          <div className="bg-teal-100 p-4 rounded-md">
+          <div className="bg-teal-100 px-4 py-8 rounded-md border-2 border-teal-200">
             <form onSubmit={handleRegister}>
-              <div className="w-9/12 flex flex-col mx-auto py-4">
+              {error && (
+                <div>
+                  <p className="text-center text-red-500 text-md">{error}</p>
+                </div>
+              )}
+              <div className="w-9/12 flex flex-col mx-auto">
                 <label htmlFor="name" className='block font-medium mb-0.5'>Name</label>
                 <input 
                   id='name'
@@ -40,7 +111,9 @@ export default function Register () {
                   placeholder='Komeng' 
                   required 
                   autoFocus 
-                  className='border border-slate-300 bg-white rounded w-full px-3 py-1 focus:outline-none focus:ring-1 focus:ring-sky-400'
+                  onChange={(e) => {nameInputValidation(e)}}
+                  value={nameValue}
+                  className='border border-slate-300 bg-white rounded w-full px-3 py-1 mb-4 focus:outline-none focus:ring-1 focus:ring-sky-400'
                 />
 
                 <label htmlFor="email" className='block font-medium mb-0.5'>Email</label>
@@ -50,7 +123,9 @@ export default function Register () {
                   name='email' 
                   placeholder='komeng@mail.com' 
                   required 
-                  className='border border-slate-300 bg-white rounded w-full px-3 py-1 focus:outline-none focus:ring-1 focus:ring-sky-400'
+                  onChange={(e) => {emailInputValidation(e)}}
+                  value={emailValue}
+                  className='border border-slate-300 bg-white rounded w-full px-3 py-1 mb-4 focus:outline-none focus:ring-1 focus:ring-sky-400'
                 />
 
                 <label htmlFor="password" className='block font-medium mb-0.5'>Password</label>
@@ -59,7 +134,9 @@ export default function Register () {
                   type="password" 
                   name='password' 
                   required 
-                  className='border border-slate-300 bg-white rounded w-full px-3 py-1 focus:outline-none focus:ring-1 focus:ring-sky-400'
+                  onChange={(e) => {passwordInputValue(e)}}
+                  value={passwordValue}
+                  className='border border-slate-300 bg-white rounded w-full px-3 py-1 mb-4 focus:outline-none focus:ring-1 focus:ring-sky-400'
                 />
 
                 <label htmlFor="password2" className='block font-medium mb-0.5'>Confirm Password</label>
@@ -68,8 +145,14 @@ export default function Register () {
                   type="password" 
                   name='password2' 
                   required 
-                  className='border border-slate-300 bg-white rounded w-full px-3 py-1 focus:outline-none focus:ring-1 focus:ring-sky-400'
+                  onChange={(e) => {confirmPasswordInputValue(e)}}
+                  value={confirmPasswordValue}
+                  className='border border-slate-300 bg-white rounded w-full px-3 py-1 mb-4 focus:outline-none focus:ring-1 focus:ring-sky-400'
                 />
+                
+                {!passwordMatch && (
+                  <p className="text-sm text-red-500 -mt-4">Password doesn't match</p>
+                )}
 
                 <button 
                   type="submit" 
