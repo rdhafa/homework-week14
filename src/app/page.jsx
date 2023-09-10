@@ -11,7 +11,7 @@ export default async function Home() {
           {books.map((book) => {
           const titleEllipsis = `${book.title} (${book.year})`
             return (
-              <Link href={`/book/${book.id}`} key={book.id} as={'image'}>
+              <Link href={`/book/${book.id}`} key={book.id} >
                 <div className="card w-64 text-center rounded overflow-hidden drop-shadow-xl">
                   <div className="card-header p-4 bg-teal-100 h-68">
                     <Image 

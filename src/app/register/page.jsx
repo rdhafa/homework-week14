@@ -71,7 +71,8 @@ export default function Register () {
         event.target.reset()
         Toast.fire({
           icon: 'success',
-          title: 'Thank You for Registering!',
+          title: 'Register Success!',
+          text: 'Thank you for Registering!',
           position: 'top-end'
         })
         setError(false)
@@ -109,6 +110,7 @@ export default function Register () {
                   type="text" 
                   name='name' 
                   placeholder='Komeng' 
+                  autoComplete="off"
                   required 
                   autoFocus 
                   onChange={(e) => {nameInputValidation(e)}}
@@ -122,6 +124,7 @@ export default function Register () {
                   type="email" 
                   name='email' 
                   placeholder='komeng@mail.com' 
+                  autoComplete="off"
                   required 
                   onChange={(e) => {emailInputValidation(e)}}
                   value={emailValue}

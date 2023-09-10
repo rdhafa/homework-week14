@@ -5,13 +5,15 @@ import Swal from 'sweetalert2'
 import { verifyToken } from '@/lib/verifyToken'
 import { useEffect, useState } from 'react'
 import Cookies from 'js-cookie'
-import { useRouter } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 
 export default function Navbar () {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState(false)
+  const [inAddbook, setInAddbook] = useState(true)
   const router = useRouter()
+  const pathname = usePathname()
 
   const authenticate = async () => {
     const tokenCookie = Cookies.get("jwt_token")
@@ -30,7 +32,15 @@ export default function Navbar () {
   useEffect(() => {
     authenticate()
     setIsLoading(false)
-  }, [Cookies.get()])
+  }, [Cookies.get("jwt_token")])
+
+  useEffect(() => {
+    if (pathname === '/addbook') {
+      setInAddbook(true)
+    } else {
+      setInAddbook(false)
+    }
+  }, [pathname])
 
   const Toast = Swal.mixin({
     toast: true,
@@ -77,7 +87,7 @@ export default function Navbar () {
         event.target.reset()
         Toast.fire({
           icon: 'success',
-          title: 'Login Successful!',
+          title: 'Login Success!',
           position: 'top-end'
         })
         authenticate()
@@ -152,11 +162,15 @@ export default function Navbar () {
                   </button>
                 ) : (
                   <div>
-                    <button 
-                    className='transition font-medium px-3 py-1.5 bg-teal-500 rounded-md mr-4 hover:text-teal-500 hover:bg-teal-200 hover:ease-in-out' 
-                    onClick={() => {toggleModal(true)}}>
-                    Add Book
-                  </button>
+                    {!inAddbook && (
+                      <Link href={'/addbook'}>
+                        <button 
+                        className='transition font-medium px-3 py-1.5 bg-teal-500 rounded-md mr-4 hover:text-teal-500 hover:bg-teal-200 hover:ease-in-out' 
+                        >
+                        Add Book
+                        </button>
+                      </Link>
+                    )}
                   <button 
                     className='transition font-medium px-3 py-1.5 bg-red-500 rounded-md hover:text-red-500 hover:bg-red-200 hover:ease-in-out' 
                     onClick={handleLogout}>
@@ -190,6 +204,7 @@ export default function Navbar () {
                 type="email" 
                 name='email' 
                 placeholder='example@example.com' 
+                autoComplete="off"
                 required 
                 autoFocus 
                 className='border border-slate-300 bg-white rounded w-full px-3 py-1 focus:outline-none focus:ring-1 focus:ring-sky-400'/>
