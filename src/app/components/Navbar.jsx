@@ -90,6 +90,7 @@ export default function Navbar () {
           title: 'Login Success!',
           position: 'top-end'
         })
+        document.body.classList.remove('no-scroll')
         authenticate()
         setError(false)
         router.push('/')

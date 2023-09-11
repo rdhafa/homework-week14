@@ -1,3 +1,9 @@
+import BookForm from "../components/BookForm";
+
 export default function Addbook () {
-  return <h1>Addbook</h1>
+  return (
+    <>
+      <BookForm />
+    </>
+  )
 }
