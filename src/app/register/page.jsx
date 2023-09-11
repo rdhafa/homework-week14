@@ -159,7 +159,7 @@ export default function Register () {
 
                 <button 
                   type="submit" 
-                  className='font-medium bg-teal-500 w-full mt-4 rounded-md text-white py-1 hover:ring-2 hover:ring-teal-500 hover:ring-offset-2'
+                  className='transition font-medium bg-teal-500 w-full mt-4 rounded-md text-white py-1 hover:text-teal-500 hover:bg-teal-200 hover:ease-in-out'
                 >Register</button>
               </div>
             </form>

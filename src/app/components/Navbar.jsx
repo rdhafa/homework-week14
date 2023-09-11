@@ -217,7 +217,7 @@ export default function Navbar () {
                 className='border border-slate-300 bg-white rounded w-full px-3 py-1 focus:outline-none focus:ring-1 focus:ring-sky-400'/>
               <button 
                 type='submit' 
-                className='font-medium bg-sky-500 w-full mt-4 rounded-md text-white py-1 hover:ring-2 hover:ring-sky-500 hover:ring-offset-2'
+                className='transition font-medium bg-sky-500 w-full mt-4 rounded-md text-white py-1 hover:text-sky-500 hover:bg-sky-200 hover:ease-in-out'
                 >Login
               </button>
               <div className='text-center text-sm mt-2'>
