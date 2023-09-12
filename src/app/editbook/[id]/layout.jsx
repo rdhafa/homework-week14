@@ -3,11 +3,11 @@ export async function generateMetadata({ params }) {
   const res = await fetch(`http://localhost:3000/api/books/${id}`)
   const book = await res.json()
   return {
-    title: `My Bookstore - ${book.title} (${book.year})`
+    title: `My Bookstore - Edit ${book.title} (${book.year})`
   }
 }
 
-export default function BookLayout({ children }) {
+export default function EditBookLayout({ children }) {
   return (
     {...children}
   )

@@ -31,7 +31,7 @@ async function main() {
       publisher: 'Republika Penerbit',
       year: 2016,
       pages: 524,
-      image: 'uploads\\tentangkamu.jpg'
+      image: '/uploads/tentangkamu.jpg'
     },
   })
 
@@ -44,7 +44,7 @@ async function main() {
       publisher: 'm&c!',
       year: 2023,
       pages: 336,
-      image: 'uploads\\deathnote.jpg'
+      image: '/uploads/deathnote.jpg'
     },
   })
 
@@ -57,7 +57,7 @@ async function main() {
       publisher: 'Bukune',
       year: 2019,
       pages: 36,
-      image: 'uploads\\serbasalah.jpg'
+      image: '/uploads/serbasalah.jpg'
     },
   })
 
@@ -70,7 +70,7 @@ async function main() {
       publisher: 'Elex Media Komputindo',
       year: 2023,
       pages: 200,
-      image: 'uploads\\bluelock.jpg'
+      image: '/uploads/bluelock.jpg'
     },
   })
 

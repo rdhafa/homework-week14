@@ -18,7 +18,7 @@ export async function POST (req) {
   const file = reqBody.get('image')
   if (!file) return res.json({ success: false })
 
-  const imageUrl = `uploads/${Date.now() + '-' + file.name}`
+  const imageUrl = `/uploads/${Date.now() + '-' + file.name}`
   try {
     const addABook = await prisma.book.create({
       data: {
@@ -32,7 +32,7 @@ export async function POST (req) {
     })
     const bytes = await file.arrayBuffer()
     const buffer = Buffer.from(bytes)
-    const path = join('./public/', imageUrl)
+    const path = join('./public', imageUrl)
     await writeFile(path, buffer)
     revalidatePath('/')
     return res.json(addABook, { status: 200 })

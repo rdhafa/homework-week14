@@ -40,9 +40,9 @@ export default function Book ({params}) {
         <div className="bg-teal-100 w-3/5 mx-auto my-10 py-8 rounded border-2 border-teal-200">
           <div className="grid grid-cols-2">
             <Image 
-              src={`/${aBook.image}`}
-              width={160}
-              height={140}
+              src={aBook.image}
+              width={185}
+              height={270}
               style={{margin: 'auto', width: '15rem', height: 'auto'}}
               alt={aBook.title}
               priority={true}

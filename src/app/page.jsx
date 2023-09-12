@@ -15,9 +15,9 @@ export default async function Home() {
                 <div className="card w-64 text-center rounded overflow-hidden drop-shadow-xl">
                   <div className="card-header p-4 bg-teal-100 h-68">
                     <Image 
-                      src={`/${book.image}`}
-                      width={150}
-                      height={130}
+                      src={book.image}
+                      width={185}
+                      height={270}
                       style={{margin: 'auto', width: 'auto', height: '13rem'}}
                       alt={book.title}
                       priority={true}

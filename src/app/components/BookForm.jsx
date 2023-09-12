@@ -3,13 +3,13 @@ import Image from "next/image"
 import { useState } from "react"
 import Swal from "sweetalert2"
 
-export default function BookForm (bookData) {
-  const [titleValue, setTitleValue] = useState(bookData?.title || null)
-  const [authorValue, setAuthorValue] = useState(bookData?.author || null)
-  const [publisherValue, setPublisherValue] = useState(bookData?.publisher || null)
-  const [yearValue, setYearValue] = useState(bookData?.year || null)
-  const [pagesValue, setPagesValue] = useState(bookData?.pages || null)
-  const [selectedImage, setSelectedImage] = useState(bookData?.image || null)
+export default function BookForm ({bookData}) {
+  const [titleValue, setTitleValue] = useState(bookData?.title || "")
+  const [authorValue, setAuthorValue] = useState(bookData?.author || "")
+  const [publisherValue, setPublisherValue] = useState(bookData?.publisher || "")
+  const [yearValue, setYearValue] = useState(bookData?.year || "")
+  const [pagesValue, setPagesValue] = useState(bookData?.pages || "")
+  const [selectedImage, setSelectedImage] = useState(bookData?.image || "")
   const [selectedImageName, setSelectedImageName] = useState()
   const [error, setError] = useState(false)
 
@@ -67,21 +67,54 @@ export default function BookForm (bookData) {
       })
     }
     const formData = new FormData(event.target)
+    if (bookData.id) {
+      try {
+        const editBook = await fetch(`http://localhost:3000/api/books/${bookData.id}`, {
+          method: 'PUT',
+          body: formData
+        })
+        if (editBook.status === 200) {
+          document.getElementById('overlay').style.display = 'block'
+          setSelectedImage("")
+          Toast.fire({
+            icon: 'success',
+            title: 'Edit Success!',
+            text: `Book ${titleValue} updated successfully!`,
+            position: 'top-end'
+          })
+          setTimeout(() => {
+            window.location.href = '/'
+            setTimeout(() => {
+              document.getElementById('overlay').style.display = 'none'
+            }, 1000)
+          }, 2000)
+        } else {
+          throw await editBook.json()
+        }
+      } catch (err) {
+        console.log(err)
+      }
+      return
+    }
     try {
       const addABook = await fetch('http://localhost:3000/api/books', {
         method: 'POST',
         body: formData
       })
       if (addABook.status === 200) {
-        setSelectedImage(null)
+        document.getElementById('overlay').style.display = 'block'
+        setSelectedImage("")
         Toast.fire({
           icon: 'success',
           title: 'Add Book Success!',
-          text: 'Book added successfully!',
+          text: `Book ${titleValue} added successfully!`,
           position: 'top-end'
         })
         setTimeout(() => {
           window.location.href = '/'
+          setTimeout(() => {
+            document.getElementById('overlay').style.display = 'none'
+          }, 1000)
         }, 2000)
       } else {
         throw await addABook.json()
@@ -92,9 +125,11 @@ export default function BookForm (bookData) {
   }
   return (
     <>
-      <div className="w-screen">
-        <div className="w-5/12 mx-auto mt-6">
-          <h1 className="text-4xl text-center font-medium mb-4">Add a Book</h1>
+      <div id="overlay" />
+      <div className="h-screen w-full">
+        <div className="w-5/12 mx-auto mt-6 pb-12">
+          <h1 className="text-4xl text-center font-medium mb-4">
+            {bookData?.id ? ('Edit a Book') : ('Add a Book')}</h1>  
           <div className="bg-teal-100 px-4 py-8 rounded-md border-2 border-teal-200">
             <form onSubmit={handleSubmit}>
               {error && (
@@ -169,31 +204,43 @@ export default function BookForm (bookData) {
                   className='border border-slate-300 bg-white rounded w-full px-3 py-1 mb-4 focus:outline-none focus:ring-1 focus:ring-sky-400'
                 />
 
-                <label htmlFor="image" className='block font-medium mb-0.5'>Book's Cover</label>
+                <label htmlFor="image" className='block font-medium mb-0.5'>{bookData?.id ? ("Book's Cover (optional)") : ("Book's Cover")}</label>
                 {selectedImage && (
                   <div className="drop-shadow-xl my-4">
                     <Image
                       src={selectedImage}
-                      width={160}
-                      height={140}
+                      width={185}
+                      height={270}
+                      priority={true}
                       style={{margin: 'auto', width: '10rem', height: 'auto'}}
-                      alt={selectedImageName}
+                      alt={selectedImageName || bookData.title}
                     />
                   </div>
                 )}
-                <input 
-                  id='image'
-                  type="file" 
-                  name='image' 
-                  required 
-                  onChange={(e) => {selectedImageValue(e)}}
-                  className='border border-slate-300 bg-white rounded w-full px-3 py-1 mb-4 focus:outline-none focus:ring-1 focus:ring-sky-400'
-                />
+                {bookData?.id ? (
+                  <input 
+                    id='image'
+                    type="file" 
+                    name='image' 
+                    onChange={(e) => {selectedImageValue(e)}}
+                    className='border border-slate-300 bg-white rounded w-full px-3 py-1 mb-4 focus:outline-none focus:ring-1 focus:ring-sky-400'
+                  />
+                  ) : (
+                  <input 
+                    id='image'
+                    type="file" 
+                    name='image' 
+                    required 
+                    onChange={(e) => {selectedImageValue(e)}}
+                    className='border border-slate-300 bg-white rounded w-full px-3 py-1 mb-4 focus:outline-none focus:ring-1 focus:ring-sky-400'
+                  />
+                )}
+                
 
                 <button 
                   type="submit" 
                   className='transition font-medium bg-teal-500 w-full mt-4 rounded-md text-white py-1 hover:text-teal-500 hover:bg-teal-200 hover:ease-in-out'
-                >Add Book</button>
+                >{bookData?.id ? ('Edit Book') : ('Add Book')}</button>
               </div>
             </form>
           </div>
