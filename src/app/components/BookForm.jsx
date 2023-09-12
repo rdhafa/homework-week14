@@ -67,7 +67,7 @@ export default function BookForm ({bookData}) {
       })
     }
     const formData = new FormData(event.target)
-    if (bookData.id) {
+    if (bookData?.id) {
       try {
         const editBook = await fetch(`http://localhost:3000/api/books/${bookData.id}`, {
           method: 'PUT',

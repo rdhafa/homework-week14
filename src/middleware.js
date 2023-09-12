@@ -2,31 +2,54 @@ import { NextResponse as res } from 'next/server'
 import * as jose from 'jose'
 
 export async function middleware (req) {
-  let isAuthenticated //undefined
-
+  const { pathname } = req.nextUrl
   const tokenCookie = req.cookies.get("jwt_token") && req.cookies.get("jwt_token").value
-  const jwtSecretKey = new TextEncoder().encode(process.env.JWT_SECRET)
-  try {
-    await jose.jwtVerify(tokenCookie, jwtSecretKey)
-    isAuthenticated = true
-  } catch (err) {
-    isAuthenticated = false
-  }
+  
+  const authedOnly = ['/addbook', '/editbook']
+  if (!authedOnly.some((prefix) => pathname.startsWith(prefix))) {
 
-  const notForAuthed = ['/register']
+    if (pathname.startsWith('/register')) {
+      if (tokenCookie) return res.redirect(new URL('/', req.url))
+      return res.next()
+    }
 
-  if (notForAuthed.some((value) => value === req.nextUrl.pathname) && isAuthenticated) {
-    console.log('eits, gabolee')
-    return res.redirect(new URL('/', req.url))
+    if (req.method === 'GET') return res.next()
+
+    if ((
+      pathname.startsWith('/api/login') || pathname.startsWith('/api/register')
+      ) && req.method === 'POST') {
+      if (tokenCookie) return res.json({ message: "Forbidden" }, { status: 403 })
+      return res.next()
+    }
+
+    if (!tokenCookie) return res.json({ message: "Unauthorized" }, { status: 401 })
+    const jwtSecretKey = new TextEncoder().encode(process.env.JWT_SECRET)
+    try {
+      await jose.jwtVerify(tokenCookie, jwtSecretKey)
+      return res.next()
+    } catch (err) {
+      return res.json({ message: "Unauthorized" }, { status: 401 })
+    }
   } else {
-    return res.next()
+    if (!tokenCookie) return res.redirect(new URL('/', req.url))
+    const jwtSecretKey = new TextEncoder().encode(process.env.JWT_SECRET)
+    try {
+      await jose.jwtVerify(tokenCookie, jwtSecretKey)
+      return res.next()
+    } catch (err) {
+      return res.redirect(new URL('/', req.url))
+    }
   }
-  // return res.next()
-  // if (!tokenCookie) {
-  //   return res.redirect(new URL('/', req.url))
-  // }
 }
 
-// export const config = {
-//   matcher: ['/about/:path*', '/dashboard/:path*'],
-// }
+export const config = {
+  matcher: [
+    '/api/books', 
+    '/api/books/:id*', 
+    '/api/login', 
+    '/api/register', 
+    '/addbook', 
+    '/editbook/:id*', 
+    '/register'
+  ]
+}
